@@ -38,8 +38,8 @@ The project aims to demonstrate how Wi-Fi device monitoring, security-event logg
 - database/ - Database functionality
 - detection/ - Device authorization and detection
 - security/ - Security-event logging
-- eports/ - Forensic report generation
-- 	emplates/ - Web interface templates
+- Reports/ - Forensic report generation
+- Templates/ - Web interface templates
 
 ## Privacy and Security
 
