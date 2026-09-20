@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reset Evaluation Dataset</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 50px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .warning strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            line-height: 1.8;
+        }
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 12px;
+        }
+
+        button,
+        a {
+            padding: 12px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .reset-button {
+            background: #b42318;
+            color: white;
+        }
+
+        .cancel-button {
+            background: #e5e7eb;
+            color: #222;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Reset Evaluation Dataset</h1>
+
+    <div class="warning">
+        <strong>Warning</strong>
+        This action clears the current controlled evaluation dataset.
+        Individual forensic records cannot be deleted from this page.
+    </div>
+
+    <p>The following data will be cleared:</p>
+
+    <ul>
+        <li>Device observations</li>
+        <li>Security events</li>
+        <li>Investigation records associated with those events</li>
+        <li>Discovered device records</li>
+    </ul>
+
+    <p>
+        <strong>Authorized devices will NOT be deleted.</strong>
+    </p>
+
+    <p>
+        Use this function only when starting a new controlled
+        research evaluation.
+    </p>
+
+    <div class="buttons">
+
+        <form method="POST"
+              action="{{ url_for('reset_evaluation') }}"
+              onsubmit="return confirm(
+                  'Are you sure you want to reset the evaluation dataset?'
+              );">
+
+            <button type="submit" class="reset-button">
+                Reset Evaluation Dataset
+            </button>
+
+        </form>
+
+        <a href="{{ url_for('dashboard') }}"
+           class="cancel-button">
+            Cancel
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html> 

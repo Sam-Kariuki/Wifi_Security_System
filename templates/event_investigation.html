@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Security Event Investigation</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1300px;
+            margin: 25px auto;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 11px 17px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .button:hover {
+            opacity: 0.85;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #172554;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 12px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(250px, 1fr)
+            );
+            gap: 15px;
+        }
+
+        .detail {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .detail strong {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .severity,
+        .status,
+        .classification {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-open {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-investigating {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .classification-default {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .classification-confirmed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .classification-false {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .classification-test {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .description {
+            background: #f8fafc;
+            padding: 15px;
+            border-left: 4px solid #2563eb;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(280px, 1fr)
+            );
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #374151;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+        }
+
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .save-button {
+            padding: 12px 22px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            opacity: 0.85;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            padding: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .success-info {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        th {
+            background: #e2e8f0;
+            text-align: left;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .authorized {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .unauthorized {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .unknown {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .empty {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                width: 92%;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+        }
+
+        .success-popup {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    background: #166534;
+    color: white;
+
+    padding: 16px 22px;
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.20);
+
+    animation: slideIn 0.3s ease;
+}
+
+.success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 25px;
+    height: 25px;
+
+    background: white;
+    color: #166534;
+
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+@keyframes slideIn {
+
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>
+        Security Event Investigation
+    </h1>
+
+    <p>
+        Wi-Fi Security Monitoring and Forensic Analysis
+    </p>
+
+</header>
+
+
+<div class="container">
+
+    {% if request.args.get("updated") == "success" %}
+
+<div id="successPopup" class="success-popup">
+    <span class="success-icon">✓</span>
+    <span>Event changes saved successfully.</span>
+</div>
+
+{% endif %}
+
+    <a href="{{ url_for('dashboard') }}"
+       class="button">
+
+        ← BACK TO DASHBOARD
+
+    </a>
+
+    <a href="{{ url_for('generate_event_report', event_id=event[0]) }}" class="button">
+    📄 GENERATE FORENSIC REPORT
+    </a>
+
+
+
+    <!-- ====================================================
+         EVENT DETAILS
+         ==================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Security Event Details
+        </h2>
+
+        <div class="details">
+
+
+            <div class="detail">
+
+                <strong>
+                    Event ID
+                </strong>
+
+                {{ event[0] }}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    Event Type
+                </strong>
+
+                {{ event[1] }}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    Detection Time
+                </strong>
+
+                {{ event[4] }}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    Severity
+                </strong>
+
+                {% if event[5] == "High" %}
+
+                    <span class="severity high">
+                        High
+                    </span>
+
+                {% elif event[5] == "Medium" %}
+
+                    <span class="severity medium">
+                        Medium
+                    </span>
+
+                {% else %}
+
+                    <span class="severity low">
+                        {{ event[5] }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    IP Address
+                </strong>
+
+                {{ event[2] }}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    MAC Address
+                </strong>
+
+                {{ event[3] }}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    Current Event Status
+                </strong>
+
+                {% if event[7] == "Resolved" %}
+
+                    <span class="status status-resolved">
+                        Resolved
+                    </span>
+
+                {% elif event[7] == "Under Investigation" %}
+
+                    <span class="status status-investigating">
+                        Under Investigation
+                    </span>
+
+                {% else %}
+
+                    <span class="status status-open">
+                        Open
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="detail">
+
+                <strong>
+                    Classification
+                </strong>
+
+                {% if event[8] == "Confirmed Unauthorized" %}
+
+                    <span class="classification classification-confirmed">
+                        Confirmed Unauthorized
+                    </span>
+
+                {% elif event[8] == "False Positive" %}
+
+                    <span class="classification classification-false">
+                        False Positive
+                    </span>
+
+                {% elif event[8] == "Controlled Test" %}
+
+                    <span class="classification classification-test">
+                        Controlled Test
+                    </span>
+
+                {% else %}
+
+                    <span class="classification classification-default">
+                        Unclassified
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+        <br>
+
+
+        <strong>
+            Original Detection Description
+        </strong>
+
+        <div class="description">
+
+            {{ event[6] }}
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         EVENT MANAGEMENT
+         ==================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Event Management
+        </h2>
+
+
+        <div class="warning">
+
+            <strong>Investigation Note:</strong>
+
+            The original event information above is preserved.
+            The fields below record the investigator's assessment,
+            classification and resolution of the event.
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'update_security_event',
+                event_id=event[0]
+            ) }}"
+        >
+
+
+            <div class="management-grid">
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="status">
+                        Event Status
+                    </label>
+
+                    <select
+                        id="status"
+                        name="status"
+                        required
+                    >
+
+                        <option
+                            value="Open"
+                            {% if event[7] == "Open" %}
+                                selected
+                            {% endif %}
+                        >
+                            Open
+                        </option>
+
+                        <option
+                            value="Under Investigation"
+                            {% if event[7] == "Under Investigation" %}
+                                selected
+                            {% endif %}
+                        >
+                            Under Investigation
+                        </option>
+
+                        <option
+                            value="Resolved"
+                            {% if event[7] == "Resolved" %}
+                                selected
+                            {% endif %}
+                        >
+                            Resolved
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CLASSIFICATION -->
+
+                <div class="form-group">
+
+                    <label for="classification">
+                        Event Classification
+                    </label>
+
+                    <select
+                        id="classification"
+                        name="classification"
+                        required
+                    >
+
+                        <option
+                            value="Unclassified"
+                            {% if event[8] == "Unclassified" %}
+                                selected
+                            {% endif %}
+                        >
+                            Unclassified
+                        </option>
+
+                        <option
+                            value="Confirmed Unauthorized"
+                            {% if event[8] == "Confirmed Unauthorized" %}
+                                selected
+                            {% endif %}
+                        >
+                            Confirmed Unauthorized
+                        </option>
+
+                        <option
+                            value="False Positive"
+                            {% if event[8] == "False Positive" %}
+                                selected
+                            {% endif %}
+                        >
+                            False Positive
+                        </option>
+
+                        <option
+                            value="Controlled Test"
+                            {% if event[8] == "Controlled Test" %}
+                                selected
+                            {% endif %}
+                        >
+                            Controlled Test
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- INVESTIGATION NOTES -->
+
+            <div class="form-group">
+
+                <label for="investigation_notes">
+                    Investigation Notes
+                </label>
+
+                <textarea
+                    id="investigation_notes"
+                    name="investigation_notes"
+                    placeholder="Record findings from the investigation..."
+                >{{ event[9] or "" }}</textarea>
+
+            </div>
+
+
+            <!-- RESOLUTION NOTES -->
+
+            <div class="form-group">
+
+                <label for="resolution_notes">
+                    Resolution Notes
+                </label>
+
+                <textarea
+                    id="resolution_notes"
+                    name="resolution_notes"
+                    placeholder="Record how the event was resolved..."
+                >{{ event[10] or "" }}</textarea>
+
+            </div>
+
+
+            <!-- TIMESTAMPS -->
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <strong>
+                        Investigation Started
+                    </strong>
+
+                    {% if event[11] %}
+
+                        {{ event[11] }}
+
+                    {% else %}
+
+                        Not yet recorded
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Resolved At
+                    </strong>
+
+                    {% if event[12] %}
+
+                        {{ event[12] }}
+
+                    {% else %}
+
+                        Not yet resolved
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+
+                💾 SAVE EVENT MANAGEMENT UPDATE
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+    <!-- ====================================================
+         RELATED DEVICE
+         ==================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Related Device
+        </h2>
+
+
+        {% if device %}
+
+            <div class="details">
+
+
+                <div class="detail">
+
+                    <strong>
+                        Device ID
+                    </strong>
+
+                    {{ device[0] }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Current IP Address
+                    </strong>
+
+                    {{ device[1] }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        MAC Address
+                    </strong>
+
+                    {{ device[2] }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Hostname
+                    </strong>
+
+                    {% if device[3] %}
+
+                        {{ device[3] }}
+
+                    {% else %}
+
+                        N/A
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Current Status
+                    </strong>
+
+
+                    {% if device[4] == "Authorized" %}
+
+                        <span class="status authorized">
+                            Authorized
+                        </span>
+
+                    {% elif device[4] == "Potentially Unauthorized" %}
+
+                        <span class="status unauthorized">
+                            Potentially Unauthorized
+                        </span>
+
+                    {% else %}
+
+                        <span class="status unknown">
+                            Unknown
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        First Seen
+                    </strong>
+
+                    {{ device[5] }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Last Seen
+                    </strong>
+
+                    {{ device[6] }}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>
+                        Total Observations
+                    </strong>
+
+                    {{ observation_count }}
+
+                </div>
+
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                No related device record was found.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ====================================================
+         DEVICE OBSERVATION HISTORY
+         ==================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Device Observation History
+        </h2>
+
+        <p>
+            Historical observations associated with this device
+            are shown below.
+        </p>
+
+
+        <div class="table-container">
+
+
+            {% if observations %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Observation ID
+                        </th>
+
+                        <th>
+                            IP Address
+                        </th>
+
+                        <th>
+                            MAC Address
+                        </th>
+
+                        <th>
+                            Hostname
+                        </th>
+
+                        <th>
+                            Observed At
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for observation in observations %}
+
+                    <tr>
+
+                        <td>
+                            {{ observation[0] }}
+                        </td>
+
+                        <td>
+                            {{ observation[1] }}
+                        </td>
+
+                        <td>
+                            {{ observation[2] }}
+                        </td>
+
+                        <td>
+
+                            {% if observation[3] %}
+
+                                {{ observation[3] }}
+
+                            {% else %}
+
+                                N/A
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ observation[4] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+            {% else %}
+
+                <div class="empty">
+
+                    No device observation history is available.
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         FORENSIC INTEGRITY INFORMATION
+         ==================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Forensic Record Integrity
+        </h2>
+
+        <div class="success-info">
+
+            <strong>Evidence Preservation:</strong>
+
+            The original detection timestamp, event type,
+            IP address, MAC address, severity and detection
+            description are preserved as part of the original
+            security event record.
+
+            Investigation and resolution information is stored
+            separately as subsequent analyst activity.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<footer>
+
+    Wi-Fi Security Monitoring and Forensic Analysis System
+
+    <br>
+
+    Research Prototype
+
+</footer>
+
+<script>
+
+    const successPopup =
+        document.getElementById("successPopup");
+
+    if (successPopup) {
+
+        setTimeout(function () {
+
+            successPopup.style.opacity = "0";
+            successPopup.style.transition =
+                "opacity 0.5s ease";
+
+            setTimeout(function () {
+
+                successPopup.remove();
+
+            }, 500);
+
+        }, 3000);
+
+    }
+
+</script>
+
+</body>
+
+</html>

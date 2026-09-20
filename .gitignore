@@ -1,0 +1,28 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Local database and evaluation data
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Evaluation backups
+evaluation_backup/
+
+# Generated reports
+generated_reports/
+
+# Local logs
+*.log
+
+# Environment/secrets
+.env
+.env.*
+
+# VS Code/local editor files
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
